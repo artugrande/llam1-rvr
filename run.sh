@@ -51,7 +51,12 @@ if [ -z "${ANTHROPIC_API_KEY:-}" ]; then
   echo
 fi
 
-echo "Starting. Open http://127.0.0.1:8080 in Chrome."
+# Do not announce a port we may not be using -- the server logs the real one
+# once it binds, and naming the wrong one just sends people to a dead tab.
+case " $* " in
+  *" --bind-port "*) : ;;
+  *) echo "Starting. Open http://127.0.0.1:8080 in Chrome." ;;
+esac
 echo "Press Ctrl+C to stop."
 echo
 exec ./.venv/bin/python -m rvr $MODE "$@"
