@@ -123,12 +123,26 @@ wire protocol. Everything above the transport layer runs against it.
 
 ### Then, the real rover
 
-Read [the wifi section](#the-wifi-problem--read-this-before-buying-batteries)
-first — it decides whether autonomy can work at all.
+**Do the wifi step first.** In its default AP mode the rover serves its own
+network, and joining it costs your machine its internet — which means no model
+API, so no voice and no missions. One command fixes it for good:
 
 ```bash
-./run.sh --real          # writes config.yaml the first time; set rover_host in it
+# 1. Join the rover's own wifi (GalaxyRVR / 12345678) on this machine
+# 2. Point it at your real network instead:
+python -m rvr --setup-wifi "YourNetwork" "YourPassword"
+#    -> prints the address the rover ends up on
+# 3. Rejoin your normal wifi, put that address in config.yaml as rover_host
+./run.sh --real
 ```
+
+The ESP32 is 2.4GHz only — a 5GHz-only network will never work, and the failure
+looks like a wrong password. If your router publishes both bands under one name,
+that is usually fine.
+
+Staying on AP mode is a valid choice for manual driving: set
+`rover_host: 192.168.4.1` and skip the setup step. You just will not get voice
+or autonomy while you are on it.
 
 ### Driving
 

@@ -29,6 +29,13 @@ def main(argv: list[str] | None = None) -> int:
         help="run against the built-in simulator instead of real hardware",
     )
     parser.add_argument("--log-level", default=None)
+    parser.add_argument(
+        "--setup-wifi",
+        nargs=2,
+        metavar=("SSID", "PASSWORD"),
+        help="Join the rover to your wifi so your machine keeps its internet. "
+        "Run this while connected to the rover's own network (GalaxyRVR).",
+    )
     args = parser.parse_args(argv)
 
     config = Config.load(
@@ -60,8 +67,31 @@ def main(argv: list[str] | None = None) -> int:
     for problem in config.llm().check_models():
         print(f"WARNING: {problem}", file=sys.stderr)
 
+    if args.setup_wifi:
+        return _setup_wifi(config, *args.setup_wifi)
+
     with contextlib.suppress(KeyboardInterrupt):
         asyncio.run(serve(config))
+    return 0
+
+
+def _setup_wifi(config: Config, ssid: str, password: str) -> int:
+    from .provision import ProvisionError, set_station_mode
+
+    print(f"Asking the rover at {config.rover_host} to join {ssid!r}…")
+    print("(this takes a few seconds while it connects)")
+    try:
+        ip = asyncio.run(set_station_mode(config.rover_host, ssid, password))
+    except ProvisionError as exc:
+        print(f"\nFailed: {exc}", file=sys.stderr)
+        return 1
+
+    print(f"\nDone. The rover is now on your network at {ip}")
+    print("\nNext:")
+    print("  1. Rejoin your normal wifi on this machine.")
+    print(f"  2. Put `rover_host: {ip}` in config.yaml")
+    print("  3. Run: ./run.sh --real")
+    print("\nYour machine keeps its internet now, so voice and missions will work.")
     return 0
 
 
