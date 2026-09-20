@@ -128,7 +128,10 @@ network, and joining it costs your machine its internet — which means no model
 API, so no voice and no missions. One command fixes it for good:
 
 ```bash
-# 1. Join the rover's own wifi (GalaxyRVR / 12345678) on this machine
+# 1. Join the rover's own wifi on this machine. The network is named
+#    GalaxyRVR-XXXXXX, where XXXXXX is the last 6 hex digits of the ESP32's
+#    MAC -- wifiConnectAp() appends them, so it differs per unit and an exact
+#    search for "GalaxyRVR" finds nothing. Password: 12345678
 # 2. Point it at your real network instead:
 python -m rvr --setup-wifi "YourNetwork" "YourPassword"
 #    -> prints the address the rover ends up on
@@ -212,9 +215,11 @@ pytest                 # 66 tests, no hardware and no network required
 
 ## The wifi problem — read this before buying batteries
 
-In its default **AP mode** the rover serves its own network (`GalaxyRVR` /
-`12345678`). Join it and your machine has **no internet**, so the Anthropic API
-is unreachable and autonomy cannot work at all.
+In its default **AP mode** the rover serves its own network, named
+`GalaxyRVR-XXXXXX` (the firmware appends the last 6 hex digits of the ESP32's
+MAC, so it differs per unit — searching for a bare `GalaxyRVR` finds nothing),
+password `12345678`. Join it and your machine has **no internet**, so the
+Anthropic API is unreachable and autonomy cannot work at all.
 
 Fix it before writing any mission logic. In order of preference:
 

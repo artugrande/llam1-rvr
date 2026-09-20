@@ -66,6 +66,13 @@ class ProtocolError(ValueError):
     """Raised when a frame is malformed beyond what we are willing to tolerate."""
 
 
+# The access point the rover serves in its default mode. wifiConnectAp() in
+# ai-camera-firmware appends the last 6 hex digits of the ESP32's MAC, so the
+# visible network is e.g. "GalaxyRVR-A4B1C2" -- looking for a bare "GalaxyRVR"
+# finds nothing, which reads exactly like a rover that failed to boot.
+AP_SSID_PREFIX = "GalaxyRVR"
+AP_PASSWORD = "12345678"
+
 # --- Network endpoints -------------------------------------------------------
 # Both come from the firmware, not from the docs: galaxy-rvr.h pins the
 # websocket to `#define PORT "30102"` (the neighbouring comment claiming 8765 is

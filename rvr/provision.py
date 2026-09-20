@@ -86,7 +86,8 @@ async def set_station_mode(
     except aiohttp.ClientError as exc:
         raise ProvisionError(
             f"Could not reach the rover at {url} ({exc}). Are you joined to its "
-            f"wifi network (GalaxyRVR), and is it powered on?"
+            f"own wifi network? It is named GalaxyRVR-XXXXXX, with six hex digits "
+            f"from the ESP32's MAC appended -- a bare 'GalaxyRVR' will not appear."
         ) from exc
 
 
