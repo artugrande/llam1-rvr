@@ -42,9 +42,11 @@ if [ "${1:-}" = "--real" ]; then
   shift
 fi
 
-if [ -z "${ANTHROPIC_API_KEY:-}" ]; then
+# Must match the credential sources config.py actually reads, or this warns
+# about a missing key while the app happily starts with the one you did set.
+if [ -z "${ANTHROPIC_API_KEY:-}" ] && [ -z "${AI_GATEWAY_API_KEY:-}" ]; then
   echo
-  echo "  NOTE: ANTHROPIC_API_KEY is not set."
+  echo "  NOTE: no API key found (ANTHROPIC_API_KEY or AI_GATEWAY_API_KEY)."
   echo "  Manual driving will work. Voice commands and autonomy will not."
   echo "  Get a key at https://console.anthropic.com/settings/keys then:"
   echo "      export ANTHROPIC_API_KEY=sk-ant-..."
