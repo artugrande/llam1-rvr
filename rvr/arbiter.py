@@ -183,15 +183,12 @@ class Arbiter:
         Deliberately does not await: the stop must land on the next 10 Hz tick
         regardless of what the event loop is busy with.
         """
-        was_moving = self.rover.moving
-        was_auto = self.mode == Mode.AUTO
         self.rover.halt(reason)
-        # _takeover_if_needed emits the takeover event when one actually happens.
-        # Announcing a takeover on every key release, with no agent to take over
-        # from, trains the operator to ignore the one that matters.
+        # _takeover_if_needed emits the takeover event when one actually happens,
+        # and only then. In manual mode this is deliberately silent: every key
+        # release calls it, and a run of identical "Stopped" lines buries the one
+        # takeover you needed to see. Motion state is already live in the HUD.
         self._takeover_if_needed(reason=f"emergency stop ({reason})")
-        if not was_auto and was_moving:
-            self.bus.publish("log", text=f"Stopped ({reason})")
 
     def _takeover_if_needed(self, reason: str = "operator took the controls") -> None:
         if self.mode != Mode.AUTO:

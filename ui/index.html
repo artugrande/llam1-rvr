@@ -38,9 +38,16 @@
     background: var(--bad); color: #fff; border: none; padding: 8px 20px;
     border-radius: 6px; font-weight: 700; cursor: pointer; letter-spacing: .5px;
   }
-  main { padding: 16px; overflow: auto; display: flex; flex-direction: column; gap: 14px; }
-  .video { position: relative; background: #000; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
-  .video img { width: 100%; display: block; aspect-ratio: 4/3; object-fit: contain; }
+  main { padding: 16px; overflow: hidden; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+  .video {
+    position: relative; background: #000; border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--line);
+    /* Take the height left over by the controls below, and never less than this.
+       min-height:0 is load-bearing: without it a flex item refuses to shrink
+       below its content, and the frame overflows the window instead of fitting. */
+    flex: 1 1 auto; min-height: 180px;
+  }
+  .video img { width: 100%; height: 100%; display: block; object-fit: contain; }
   .hud {
     position: absolute; left: 10px; bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;
   }
